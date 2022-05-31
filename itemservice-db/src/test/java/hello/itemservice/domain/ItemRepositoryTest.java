@@ -5,26 +5,53 @@ import hello.itemservice.repository.ItemSearchCond;
 import hello.itemservice.repository.ItemUpdateDto;
 import hello.itemservice.repository.memory.MemoryItemRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * @SpringBootTest : src/main 에 있는 @SpringBootApplication 을 찾는다. @SpringBootApplication 설정을 바탕으로 테스트가 진행된다.
+ *                   현재 @Import(JdbcV3.config) 이므로 src/test 또한 마찬가지로 JdbcV3.config 바탕으로 실핸된다.
+ *
+ * @Transactional : src/main @Transactional 은 성공적으로 수행되면 커밋하도록 동작한다. 그러나, 테스트에서만! 자동으로 롤백해준다.
+ *                  class -> 전 메소드, method -> 특정 메소드에만 적용
+ */
+@Transactional
 @SpringBootTest
 class ItemRepositoryTest {
 
     @Autowired
     ItemRepository itemRepository;
 
+/*
+    @Autowired
+    PlatformTransactionManager transactionManager;
+
+    TransactionStatus status;
+
+    @BeforeEach
+    void beforeEach() {
+        status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+    }
+*/
+
     @AfterEach
     void afterEach() {
         // MemoryItemRepository 의 경우 제한적으로 사용
         if (itemRepository instanceof MemoryItemRepository) {
-            ((MemoryItemRepository) itemRepository).clearStore();
+            ((MemoryItemRepository) itemRepository).clearStore(); // memoryRepository : 메모리 삭제
         }
+
+        // transactionManager.rollback(status); // DB Repository : 롤백
     }
 
     @Test
