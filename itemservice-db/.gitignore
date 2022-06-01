@@ -182,4 +182,7 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+# QueryDSL
+src/main/generated
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij+all,java,gradle,git,macos
